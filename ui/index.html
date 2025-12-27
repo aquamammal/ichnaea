@@ -4,72 +4,80 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>ICHNAEA</title>
+
     <style>
-      :root {
-        --title-bar-height: 42px;
-      }
+      :root { --title-bar-height: 42px; }
 
       body {
         margin: 0;
         padding-top: var(--title-bar-height);
-        font-family: system-ui, sans-serif;
+        font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, sans-serif;
         background: #0b0f14;
         color: #d7e0ea;
       }
 
       #bar {
-        height: var(--title-bar-height);
         position: fixed;
-        left: 0;
-        top: 0;
-        width: 100%;
-        z-index: 10;
-        background: rgba(55, 60, 72, 0.6);
-        backdrop-filter: blur(64px);
-        -webkit-app-region: drag;
+        top: 0; left: 0; right: 0;
+        height: var(--title-bar-height);
         display: flex;
         align-items: center;
-        box-sizing: border-box;
         padding: 0 10px;
+        background: rgba(255,255,255,0.03);
+        border-bottom: 1px solid rgba(255,255,255,0.06);
+        -webkit-app-region: drag;
       }
 
-      pear-ctrl {
+      #bar pear-ctrl {
         -webkit-app-region: no-drag;
+        margin-left: auto;
       }
 
-      main {
-        padding: 24px;
-      }
-
+      main { padding: 28px 26px; }
       h1 {
-        margin: 0 0 10px 0;
-        font-size: 40px;
+        margin: 0 0 12px 0;
+        font-weight: 700;
         letter-spacing: 0.08em;
       }
 
       #status {
-        margin-top: 10px;
-        font-size: 14px;
-        opacity: 0.9;
-        line-height: 1.4;
         white-space: pre-wrap;
-        word-break: break-word;
+        line-height: 1.5;
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+        color: #b6c2cf;
       }
 
-      .ok { color: #7CFC98; }
-      .bad { color: #ff7a7a; }
+      .ok { color: #66f2a3; }
+      .bad { color: #ff6b6b; }
+
+      .section-title {
+        margin-top: 18px;
+        color: #d7e0ea;
+        opacity: 0.9;
+        font-weight: 600;
+      }
+
+      .kv { margin-top: 6px; }
+      .kv span { opacity: 0.8; }
     </style>
+
     <script type="module" src="./app.js"></script>
   </head>
 
   <body>
     <div id="bar">
+      <div style="font-size: 12px; opacity: 0.75;">ICHNAEA</div>
       <pear-ctrl></pear-ctrl>
     </div>
 
     <main>
       <h1>ICHNAEA</h1>
+
       <div id="status">Booting…</div>
+
+      <div class="section-title">Identity</div>
+      <div class="kv"><span>Public key:</span> <code id="pubkey">—</code></div>
+      <div class="kv"><span>Created:</span> <code id="created">—</code></div>
     </main>
   </body>
 </html>

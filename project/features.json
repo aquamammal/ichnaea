@@ -1,0 +1,37 @@
+[
+  {
+    "id": "phase3-identity",
+    "name": "Phase 3 local persistent identity",
+    "description": "Generate and persist a local P2P identity (hypercore-crypto keypair) and show only the public fingerprint in the UI.",
+    "acceptance_criteria": [
+      "Identity is generated with hypercore-crypto keyPair",
+      "Identity persists locally and is stable across restarts",
+      "Secret key is never exposed to the UI",
+      "UI displays public key fingerprint",
+      "App launches the GUI reliably"
+    ],
+    "test_plan": [
+      {
+        "command": "npm test",
+        "pass": "Identity persistence tests pass"
+      }
+    ],
+    "tests": [
+      {
+        "name": "identity persistence",
+        "initial_state": "failing",
+        "passing": true,
+        "implemented": true,
+        "notes": "Passed via `npm test` (file-based persistence via injected read/write)."
+      },
+      {
+        "name": "public identity does not include secret",
+        "initial_state": "failing",
+        "passing": true,
+        "implemented": true,
+        "notes": "Passed via `npm test`."
+      }
+    ],
+    "implemented": true
+  }
+]
