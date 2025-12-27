@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>ICHNAEA</title>
+    <style>
+      :root {
+        --title-bar-height: 42px;
+      }
+
+      body {
+        margin: 0;
+        padding-top: var(--title-bar-height);
+        font-family: system-ui, sans-serif;
+        background: #0b0f14;
+        color: #d7e0ea;
+      }
+
+      #bar {
+        height: var(--title-bar-height);
+        position: fixed;
+        left: 0;
+        top: 0;
+        width: 100%;
+        z-index: 10;
+        background: rgba(55, 60, 72, 0.6);
+        backdrop-filter: blur(64px);
+        -webkit-app-region: drag;
+        display: flex;
+        align-items: center;
+        box-sizing: border-box;
+        padding: 0 10px;
+      }
+
+      pear-ctrl {
+        -webkit-app-region: no-drag;
+      }
+
+      main {
+        padding: 24px;
+      }
+
+      h1 {
+        margin: 0 0 10px 0;
+        font-size: 40px;
+        letter-spacing: 0.08em;
+      }
+
+      #status {
+        margin-top: 10px;
+        font-size: 14px;
+        opacity: 0.9;
+        line-height: 1.4;
+        white-space: pre-wrap;
+        word-break: break-word;
+      }
+
+      .ok { color: #7CFC98; }
+      .bad { color: #ff7a7a; }
+    </style>
+    <script type="module" src="./app.js"></script>
+  </head>
+
+  <body>
+    <div id="bar">
+      <pear-ctrl></pear-ctrl>
+    </div>
+
+    <main>
+      <h1>ICHNAEA</h1>
+      <div id="status">Booting…</div>
+    </main>
+  </body>
+</html>
