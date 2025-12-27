@@ -1,0 +1,628 @@
+{
+  "meta": {
+    "project": "ICHNAEA",
+    "repo_type": "pear-desktop-gui",
+    "created_at": "2025-12-27T00:00:00Z",
+    "updated_at": "2025-12-27T16:55:00Z",
+    "policy": {
+      "immutable_features": true,
+      "allowed_mutations": [
+        "features[].status.implemented (false->true)",
+        "features[].tests[].passing (false->true)",
+        "features[].tests[].evidence append",
+        "features[].status.notes append",
+        "meta.updated_at"
+      ],
+      "forbidden_mutations": [
+        "change feature ids",
+        "rewrite acceptance_criteria",
+        "add/remove features",
+        "change test_plan semantics",
+        "mark passing without running tests"
+      ]
+    },
+    "conventions": {
+      "id_format": "F-###",
+      "evidence_format": {
+        "timestamp": "ISO-8601",
+        "commands_run": "string[]",
+        "result": "pass|fail",
+        "summary": "string",
+        "artifacts": "string[]"
+      }
+    }
+  },
+  "features": [
+    {
+      "id": "F-001",
+      "name": "Boot baseline: Pear GUI opens reliably",
+      "description": "The application launches as a Pear desktop GUI window with DOM available.",
+      "acceptance_criteria": [
+        "Running `pear run --dev .` opens a desktop window (not terminal-only).",
+        "The window renders 'ICHNAEA' in the UI.",
+        "UI confirms DOM availability."
+      ],
+      "test_plan": [
+        {
+          "name": "GUI smoke (manual)",
+          "command": "pear run --dev .",
+          "pass_condition": "Window opens and shows 'ICHNAEA' and DOM OK in the UI."
+        }
+      ],
+      "tests": [
+        {
+          "name": "smoke_gui_launch_manual",
+          "type": "smoke",
+          "path_or_command": "pear run --dev .",
+          "initial_state": "failing",
+          "passing": false,
+          "evidence": []
+        }
+      ],
+      "status": {
+        "implemented": false,
+        "notes": []
+      }
+    },
+    {
+      "id": "F-002",
+      "name": "Repo contract: codex.md + progress.md + init script",
+      "description": "Create durable repo documentation and tracking so work is resumable across sessions.",
+      "acceptance_criteria": [
+        "`codex.md` exists at repo root with: overview, constraints, exact run/test commands, repo layout, DoD.",
+        "`progress.md` exists and is append-only.",
+        "`project/init.sh` exists and runs: npm install, tests, and prints next incomplete feature id."
+      ],
+      "test_plan": [
+        {
+          "name": "Docs presence + init script runs",
+          "command": "bash project/init.sh",
+          "pass_condition": "Script completes without error and prints next incomplete feature id."
+        }
+      ],
+      "tests": [
+        {
+          "name": "init_script_runs",
+          "type": "integration",
+          "path_or_command": "bash project/init.sh",
+          "initial_state": "failing",
+          "passing": false,
+          "evidence": []
+        }
+      ],
+      "status": {
+        "implemented": false,
+        "notes": []
+      }
+    },
+    {
+      "id": "F-003",
+      "name": "Test harness: unit runner + first forced-failing test",
+      "description": "Establish a Node-based unit test runner suitable for ESM modules and make at least one test initially failing.",
+      "acceptance_criteria": [
+        "`npm test` runs a unit test runner (Vitest preferred; otherwise Jest with ESM support).",
+        "At least one test initially fails until the corresponding feature is implemented.",
+        "Test output is deterministic and documented in `codex.md`."
+      ],
+      "test_plan": [
+        {
+          "name": "Unit tests run",
+          "command": "npm test",
+          "pass_condition": "Runner executes; failing tests represent unimplemented features."
+        }
+      ],
+      "tests": [
+        {
+          "name": "unit_runner_operational",
+          "type": "unit",
+          "path_or_command": "npm test",
+          "initial_state": "failing",
+          "passing": false,
+          "evidence": []
+        }
+      ],
+      "status": {
+        "implemented": false,
+        "notes": []
+      }
+    },
+    {
+      "id": "F-004",
+      "name": "Local identity: persistent device keypair",
+      "description": "Generate and persist a device identity keypair locally using Holepunch primitives. Display public fingerprint in UI. No networking.",
+      "acceptance_criteria": [
+        "Identity uses `hypercore-crypto` keyPair (or equivalent Holepunch primitive).",
+        "Identity persists locally and reloads unchanged across app restarts.",
+        "Secret key never displayed in UI.",
+        "UI shows public key fingerprint (prefix + ellipsis) and created timestamp."
+      ],
+      "test_plan": [
+        {
+          "name": "Unit: identity persists across reload",
+          "command": "npm test",
+          "pass_condition": "A unit test confirms keypair is stable across two load calls using the same storage path/provider."
+        },
+        {
+          "name": "GUI smoke (manual): fingerprint stable across restart",
+          "command": "pear run --dev .",
+          "pass_condition": "UI shows same public key fingerprint after app restart."
+        }
+      ],
+      "tests": [
+        {
+          "name": "unit_identity_persistence",
+          "type": "unit",
+          "path_or_command": "tests/identity.test.js",
+          "initial_state": "failing",
+          "passing": false,
+          "evidence": []
+        },
+        {
+          "name": "smoke_identity_ui_manual",
+          "type": "smoke",
+          "path_or_command": "pear run --dev .",
+          "initial_state": "failing",
+          "passing": false,
+          "evidence": []
+        }
+      ],
+      "status": {
+        "implemented": false,
+        "notes": [
+          "Pear GUI runtime may not support Node built-ins like fs/path; use Bare-compatible IO or Pear-supported storage APIs."
+        ]
+      }
+    },
+    {
+      "id": "F-005",
+      "name": "Local data model: contacts + relationships + last-known location",
+      "description": "Define and persist local-only state for contacts, consent, relationship keys, and last-known location per friend.",
+      "acceptance_criteria": [
+        "Local store schema exists with versioning/migration field.",
+        "Can create a contact record (pending/approved/blocked).",
+        "Can create a relationship record keyed by contact id.",
+        "Can store only last-known location per contact (no history)."
+      ],
+      "test_plan": [
+        {
+          "name": "Unit: store CRUD",
+          "command": "npm test",
+          "pass_condition": "CRUD operations pass; last-known location overwrites prior value."
+        }
+      ],
+      "tests": [
+        {
+          "name": "unit_store_crud",
+          "type": "unit",
+          "path_or_command": "tests/store.test.js",
+          "initial_state": "failing",
+          "passing": false,
+          "evidence": []
+        }
+      ],
+      "status": {
+        "implemented": false,
+        "notes": []
+      }
+    },
+    {
+      "id": "F-006",
+      "name": "Consent UX skeleton: add friend + approve/deny",
+      "description": "Implement UI states and local state transitions for mutual consent without networking.",
+      "acceptance_criteria": [
+        "UI can create an outgoing friend request token (string).",
+        "UI can accept an incoming token and create a pending request.",
+        "UI supports Approve/Deny; decisions persist locally.",
+        "Approving transitions contact to 'approved'; denying to 'denied' or removes request per policy."
+      ],
+      "test_plan": [
+        {
+          "name": "Unit: consent state machine",
+          "command": "npm test",
+          "pass_condition": "State transitions match acceptance criteria."
+        },
+        {
+          "name": "GUI smoke (manual): consent flows visible",
+          "command": "pear run --dev .",
+          "pass_condition": "User can create token, enter token, and click Approve/Deny and see state update."
+        }
+      ],
+      "tests": [
+        {
+          "name": "unit_consent_state_machine",
+          "type": "unit",
+          "path_or_command": "tests/consent.test.js",
+          "initial_state": "failing",
+          "passing": false,
+          "evidence": []
+        },
+        {
+          "name": "smoke_consent_ui_manual",
+          "type": "smoke",
+          "path_or_command": "pear run --dev .",
+          "initial_state": "failing",
+          "passing": false,
+          "evidence": []
+        }
+      ],
+      "status": {
+        "implemented": false,
+        "notes": []
+      }
+    },
+    {
+      "id": "F-007",
+      "name": "Networking bootstrap: Hyperswarm discovery for a pairing topic",
+      "description": "Enable peer discovery via Hyperswarm using a topic derived from the pairing token. No location payload yet.",
+      "acceptance_criteria": [
+        "App can join a Hyperswarm topic derived from token.",
+        "Shows connection status for peers (connected/disconnected).",
+        "Does not send location data in this phase."
+      ],
+      "test_plan": [
+        {
+          "name": "Integration: two-peer connect (manual)",
+          "command": "Run app on two machines and use same pairing token/topic",
+          "pass_condition": "Both UIs show peer connected."
+        }
+      ],
+      "tests": [
+        {
+          "name": "manual_two_peer_connect",
+          "type": "integration",
+          "path_or_command": "manual: two-machine Hyperswarm connect",
+          "initial_state": "failing",
+          "passing": false,
+          "evidence": []
+        }
+      ],
+      "status": {
+        "implemented": false,
+        "notes": [
+          "If automated UI/e2e is infeasible, require a manual integration checklist with logs/screenshots stored under artifacts/."
+        ]
+      }
+    },
+    {
+      "id": "F-008",
+      "name": "Per-relationship encrypted stream establishment",
+      "description": "Each approved relationship negotiates an independent encrypted channel. No location payload yet.",
+      "acceptance_criteria": [
+        "On first post-approval connection, perform handshake to establish relationship channel.",
+        "Derive per-relationship keys and store locally.",
+        "Both sides agree on a stable relationship id.",
+        "Secret material never exposed in UI."
+      ],
+      "test_plan": [
+        {
+          "name": "Unit: key derivation determinism",
+          "command": "npm test",
+          "pass_condition": "Given same inputs, relationship key derivation yields same outputs and rejects malformed inputs."
+        },
+        {
+          "name": "Integration: handshake over live connection (manual)",
+          "command": "Two machines, connect, approve, observe 'secure channel established'",
+          "pass_condition": "UI indicates secure channel, logs show handshake success."
+        }
+      ],
+      "tests": [
+        {
+          "name": "unit_relationship_key_derivation",
+          "type": "unit",
+          "path_or_command": "tests/crypto_relationship.test.js",
+          "initial_state": "failing",
+          "passing": false,
+          "evidence": []
+        },
+        {
+          "name": "manual_secure_channel_handshake",
+          "type": "integration",
+          "path_or_command": "manual: two-machine handshake",
+          "initial_state": "failing",
+          "passing": false,
+          "evidence": []
+        }
+      ],
+      "status": {
+        "implemented": false,
+        "notes": []
+      }
+    },
+    {
+      "id": "F-009",
+      "name": "Message protocol v1: typed messages + validation",
+      "description": "Define a small, strict message protocol with versioning and schema validation.",
+      "acceptance_criteria": [
+        "Protocol defines message types: hello/version, consent-state, heartbeat.",
+        "Unknown/invalid messages are rejected and logged.",
+        "Protocol version mismatch is handled gracefully (no crash)."
+      ],
+      "test_plan": [
+        {
+          "name": "Unit: encode/decode + validation",
+          "command": "npm test",
+          "pass_condition": "Valid messages roundtrip; invalid messages rejected."
+        }
+      ],
+      "tests": [
+        {
+          "name": "unit_protocol_validation",
+          "type": "unit",
+          "path_or_command": "tests/protocol.test.js",
+          "initial_state": "failing",
+          "passing": false,
+          "evidence": []
+        }
+      ],
+      "status": {
+        "implemented": false,
+        "notes": []
+      }
+    },
+    {
+      "id": "F-010",
+      "name": "Fake location send/receive (secure, last-known only)",
+      "description": "Send dummy coords over the encrypted relationship stream and display last-known location per contact. No history.",
+      "acceptance_criteria": [
+        "Sender can toggle 'share location' for a contact.",
+        "When enabled, sends dummy coords periodically over secure stream.",
+        "Receiver displays last-known lat/lon + timestamp for that contact.",
+        "Only last-known location is persisted locally (overwrites)."
+      ],
+      "test_plan": [
+        {
+          "name": "Unit: last-known overwrite",
+          "command": "npm test",
+          "pass_condition": "Store keeps only last-known location per contact."
+        },
+        {
+          "name": "Integration: live receive (manual)",
+          "command": "Two machines connected with secure channel, enable fake sharing",
+          "pass_condition": "Receiver UI updates last-known location repeatedly."
+        }
+      ],
+      "tests": [
+        {
+          "name": "unit_last_known_location_overwrite",
+          "type": "unit",
+          "path_or_command": "tests/location_store.test.js",
+          "initial_state": "failing",
+          "passing": false,
+          "evidence": []
+        },
+        {
+          "name": "manual_fake_location_stream",
+          "type": "integration",
+          "path_or_command": "manual: two-machine fake location",
+          "initial_state": "failing",
+          "passing": false,
+          "evidence": []
+        }
+      ],
+      "status": {
+        "implemented": false,
+        "notes": []
+      }
+    },
+    {
+      "id": "F-011",
+      "name": "Real location source v1 (manual input)",
+      "description": "Replace dummy coords with a reliable desktop-friendly source: manual lat/lon input and send that value.",
+      "acceptance_criteria": [
+        "UI provides manual lat/lon entry with validation.",
+        "If sharing is enabled, sends the entered coords.",
+        "Receiver updates last-known location accordingly."
+      ],
+      "test_plan": [
+        {
+          "name": "Unit: input validation",
+          "command": "npm test",
+          "pass_condition": "Rejects invalid lat/lon; accepts valid range."
+        },
+        {
+          "name": "Manual: two-machine real coords",
+          "command": "Two machines, enter coords, send, observe receiver",
+          "pass_condition": "Receiver shows the same coords sent."
+        }
+      ],
+      "tests": [
+        {
+          "name": "unit_latlon_validation",
+          "type": "unit",
+          "path_or_command": "tests/latlon.test.js",
+          "initial_state": "failing",
+          "passing": false,
+          "evidence": []
+        },
+        {
+          "name": "manual_real_coords_send",
+          "type": "integration",
+          "path_or_command": "manual: two-machine manual coords",
+          "initial_state": "failing",
+          "passing": false,
+          "evidence": []
+        }
+      ],
+      "status": {
+        "implemented": false,
+        "notes": [
+          "Real OS geolocation may be added later as an optional source, but manual input is the minimum reliable baseline."
+        ]
+      }
+    },
+    {
+      "id": "F-012",
+      "name": "Map view v1 (OpenStreetMap)",
+      "description": "Render an OpenStreetMap view and show markers for self and friends' last-known location. No history.",
+      "acceptance_criteria": [
+        "UI shows a map widget/view.",
+        "Displays marker for each contact with last-known location.",
+        "Updates marker positions as new last-known locations arrive."
+      ],
+      "test_plan": [
+        {
+          "name": "Manual: map renders and markers update",
+          "command": "pear run --dev .",
+          "pass_condition": "Map renders; markers appear and move when last-known location changes."
+        }
+      ],
+      "tests": [
+        {
+          "name": "smoke_map_manual",
+          "type": "smoke",
+          "path_or_command": "pear run --dev .",
+          "initial_state": "failing",
+          "passing": false,
+          "evidence": []
+        }
+      ],
+      "status": {
+        "implemented": false,
+        "notes": [
+          "If automated UI testing is not feasible, store screenshots under artifacts/ with timestamped filenames."
+        ]
+      }
+    },
+    {
+      "id": "F-013",
+      "name": "Privacy controls v1 (per-friend toggles + precision)",
+      "description": "Per-contact sharing controls with mutual consent enforcement and precision settings.",
+      "acceptance_criteria": [
+        "Per-contact toggle: start/stop sharing.",
+        "Mutual consent enforced: if either side disables, no location is transmitted.",
+        "Precision setting supports rounding (e.g., 3 decimals) vs exact.",
+        "Pause sharing for X minutes (timer persisted locally)."
+      ],
+      "test_plan": [
+        {
+          "name": "Unit: mutual consent enforcement",
+          "command": "npm test",
+          "pass_condition": "Protocol/logic blocks sending when consent not mutual."
+        }
+      ],
+      "tests": [
+        {
+          "name": "unit_mutual_consent_enforcement",
+          "type": "unit",
+          "path_or_command": "tests/privacy_controls.test.js",
+          "initial_state": "failing",
+          "passing": false,
+          "evidence": []
+        }
+      ],
+      "status": {
+        "implemented": false,
+        "notes": []
+      }
+    },
+    {
+      "id": "F-014",
+      "name": "Key management + revoke/block",
+      "description": "Allow revoking a relationship (deleting relationship keys) and blocking a contact locally.",
+      "acceptance_criteria": [
+        "UI shows identity fingerprint (self + friend) for verification.",
+        "Revoke deletes relationship keys and stops communication.",
+        "Block prevents reconnection/processing of messages for that contact.",
+        "All actions are local-only and persistent."
+      ],
+      "test_plan": [
+        {
+          "name": "Unit: revoke deletes keys",
+          "command": "npm test",
+          "pass_condition": "Keys removed; sending disabled; contact state updated."
+        },
+        {
+          "name": "Manual: revoke stops updates",
+          "command": "Two machines connected; revoke on one side; observe no more updates",
+          "pass_condition": "Location updates stop and do not resume until re-paired."
+        }
+      ],
+      "tests": [
+        {
+          "name": "unit_revoke_deletes_keys",
+          "type": "unit",
+          "path_or_command": "tests/revoke.test.js",
+          "initial_state": "failing",
+          "passing": false,
+          "evidence": []
+        },
+        {
+          "name": "manual_revoke_stops_updates",
+          "type": "integration",
+          "path_or_command": "manual: two-machine revoke",
+          "initial_state": "failing",
+          "passing": false,
+          "evidence": []
+        }
+      ],
+      "status": {
+        "implemented": false,
+        "notes": []
+      }
+    },
+    {
+      "id": "F-015",
+      "name": "Reliability: reconnect + health states",
+      "description": "Improve runtime stability with reconnect/backoff and clear connection health states per contact.",
+      "acceptance_criteria": [
+        "Connection state shown: disconnected/connecting/connected/secure.",
+        "Reconnect attempts use backoff.",
+        "App does not enter infinite boot loops; failures surface as UI errors."
+      ],
+      "test_plan": [
+        {
+          "name": "Manual: restart peer reconnects",
+          "command": "Two machines connected; restart one; observe reconnect",
+          "pass_condition": "Reconnect occurs and secure channel re-establishes without manual intervention."
+        }
+      ],
+      "tests": [
+        {
+          "name": "manual_reconnect",
+          "type": "integration",
+          "path_or_command": "manual: two-machine reconnect",
+          "initial_state": "failing",
+          "passing": false,
+          "evidence": []
+        }
+      ],
+      "status": {
+        "implemented": false,
+        "notes": []
+      }
+    },
+    {
+      "id": "F-016",
+      "name": "Packaging: distributable desktop builds",
+      "description": "Produce installable packages for desktop platforms (Linux/macOS/Windows) via Pear workflow.",
+      "acceptance_criteria": [
+        "Build command documented in codex.md.",
+        "Produces an artifact that runs on the target platform.",
+        "Versioning recorded (app version + git commit)."
+      ],
+      "test_plan": [
+        {
+          "name": "Manual: build artifact runs",
+          "command": "Follow documented build steps",
+          "pass_condition": "Artifact launches and shows main UI."
+        }
+      ],
+      "tests": [
+        {
+          "name": "manual_build_and_run",
+          "type": "smoke",
+          "path_or_command": "manual: pear build/package",
+          "initial_state": "failing",
+          "passing": false,
+          "evidence": []
+        }
+      ],
+      "status": {
+        "implemented": false,
+        "notes": [
+          "Exact packaging commands depend on Pear release tooling available in this environment; must be verified and documented."
+        ]
+      }
+    }
+  ]
+}
