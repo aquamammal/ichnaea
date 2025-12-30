@@ -17,7 +17,8 @@ import {
   setLastKnownLocation,
   listContactSummaries,
   setShareLocation,
-  findRelationshipByContactId
+  findRelationshipByContactId,
+  deleteContact
 } from './store.js'
 
 // Load identity locally
@@ -138,6 +139,10 @@ pipe.on('data', async (data) => {
     if (msg.type === 'location:toggle') {
       const contact = await setShareLocation(msg.contactId || '', Boolean(msg.enabled))
       pipe.write(JSON.stringify({ type: 'location:toggle', id: msg.id, contact }))
+    }
+    if (msg.type === 'contact:delete') {
+      await deleteContact(msg.contactId || '')
+      pipe.write(JSON.stringify({ type: 'contact:deleted', id: msg.id }))
     }
   } catch (err) {
     pipe.write(JSON.stringify({ type: 'error', id: msg.id, message: String(err?.message || err) }))

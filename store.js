@@ -182,6 +182,18 @@ export async function listContactSummaries (opts = {}) {
   })
 }
 
+export async function deleteContact (contactId, opts = {}) {
+  const { storage, store } = await load(opts)
+  if (!store.contacts[contactId]) return false
+  delete store.contacts[contactId]
+  delete store.locations[contactId]
+  for (const [id, rel] of Object.entries(store.relationships)) {
+    if (rel.contactId === contactId) delete store.relationships[id]
+  }
+  await save(store, { ...opts, storage })
+  return true
+}
+
 export async function setLastKnownLocation (contactId, location = {}, opts = {}) {
   const { storage, store } = await load(opts)
   if (!store.contacts[contactId]) throw new Error('Contact not found')

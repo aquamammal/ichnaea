@@ -156,6 +156,7 @@ async function main () {
       const toggle = status === 'approved'
         ? `<button data-act="share" data-id="${c.id}" data-share="${c.shareLocation ? '1' : '0'}">${c.shareLocation ? 'Stop' : 'Share'}</button>`
         : ''
+      const del = `<button data-act="delete" data-id="${c.id}">Remove</button>`
       return `<div class="kv">` +
         `<code>${esc(c.id)}</code> ` +
         `<span>${esc(direction)}</span> ` +
@@ -163,13 +164,14 @@ async function main () {
         `<span>${esc(token)}</span> ` +
         `<span>${esc(share)}</span> ` +
         `<span>${esc(loc)}</span> ` +
-        `${approve} ${deny} ${toggle}` +
+        `${approve} ${deny} ${toggle} ${del}` +
       `</div>`
     })
     setHtml('contacts', rows.join(''))
   }
 
   const btnCreate = document.getElementById('btn-create-token')
+  const btnClear = document.getElementById('btn-clear-contacts')
   const btnAccept = document.getElementById('btn-accept-token')
   const inputToken = document.getElementById('incoming-token')
   const btnJoin = document.getElementById('btn-join-swarm')
@@ -188,6 +190,16 @@ async function main () {
       if (!token.trim()) return
       await send('consent:accept-token', { token: token.trim() })
       if (inputToken) inputToken.value = ''
+      await refreshContacts()
+    })
+  }
+  if (btnClear) {
+    btnClear.addEventListener('click', async () => {
+      const res = await send('contact:list')
+      const contacts = res.contacts || []
+      for (const c of contacts) {
+        await send('contact:delete', { contactId: c.id })
+      }
       await refreshContacts()
     })
   }
@@ -218,6 +230,9 @@ async function main () {
     if (act === 'share') {
       const current = target.dataset.share === '1'
       await send('location:toggle', { contactId: id, enabled: !current })
+    }
+    if (act === 'delete') {
+      await send('contact:delete', { contactId: id })
     }
     await refreshContacts()
   })

@@ -50,6 +50,16 @@
 - Next: F-010 manual two-machine fake location test
 - Notes: Manual integration still required to confirm live receive.
 
+## 2025-12-30 19:28 — F-010 Fake location send/receive (secure, last-known only)
+- Summary: Added contact cleanup controls to reduce token confusion during manual tests.
+- Files: store.js, index.js, ui/index.html, ui/app.js
+- Commands:
+  - npm test
+- Results: PASS (unit tests)
+- Commit: (pending)
+- Next: F-010 manual two-machine fake location test
+- Notes: Clear contacts + per-contact remove added for easier manual verification.
+
 ## 2025-12-27 17:12 — F-005 Local data model: contacts + relationships + last-known location
 - Summary: Added local store module with schema/versioning and CRUD for contacts, relationships, and last-known location.
 - Files: store.js, test/store.test.js
