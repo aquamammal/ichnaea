@@ -14,7 +14,8 @@ export function createSwarmManager () {
     topic: '',
     connecting: 0,
     connections: 0,
-    peers: 0
+    peers: 0,
+    lastConnectedAt: 0
   }
 
   const listeners = new Set()
@@ -36,6 +37,8 @@ export function createSwarmManager () {
   })
 
   swarm.on('connection', (conn) => {
+    state.lastConnectedAt = Date.now()
+    emit()
     conn.on('close', () => {
       state.connecting = swarm.connecting || 0
       state.connections = swarm.connections ? swarm.connections.size : 0
@@ -52,6 +55,7 @@ export function createSwarmManager () {
     await leave()
     currentTopic = topic
     state.topic = topic.toString('hex')
+    state.lastConnectedAt = 0
     discovery = swarm.join(topic, { server: true, client: true })
     await discovery.flushed()
     state.connecting = swarm.connecting || 0
@@ -70,6 +74,7 @@ export function createSwarmManager () {
     state.connecting = 0
     state.connections = 0
     state.peers = 0
+    state.lastConnectedAt = 0
     emit()
   }
 

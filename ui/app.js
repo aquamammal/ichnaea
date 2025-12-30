@@ -80,11 +80,15 @@ async function main () {
       setText('swarm-status', 'Disconnected.')
       return
     }
+    const last = state.lastConnectedAt
+      ? `last=${new Date(state.lastConnectedAt).toISOString()}`
+      : 'last=—'
     const parts = [
       `topic=${state.topic.slice(0, 16)}…`,
       `connecting=${state.connecting || 0}`,
       `connections=${state.connections || 0}`,
-      `peers=${state.peers || 0}`
+      `peers=${state.peers || 0}`,
+      last
     ]
     setText('swarm-status', parts.join(' | '))
   }
