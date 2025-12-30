@@ -3,7 +3,7 @@
     "project": "ICHNAEA",
     "repo_type": "pear-desktop-gui",
     "created_at": "2025-12-27T00:00:00Z",
-    "updated_at": "2025-12-30T18:18:25Z",
+    "updated_at": "2025-12-30T18:22:25Z",
     "policy": {
       "immutable_features": true,
       "allowed_mutations": [
@@ -483,13 +483,25 @@
           "type": "unit",
           "path_or_command": "tests/protocol.test.js",
           "initial_state": "failing",
-          "passing": false,
-          "evidence": []
+          "passing": true,
+          "evidence": [
+            {
+              "timestamp": "2025-12-30T18:22:25Z",
+              "commands_run": [
+                "npm test"
+              ],
+              "result": "pass",
+              "summary": "Protocol encode/decode and validation tests pass.",
+              "artifacts": []
+            }
+          ]
         }
       ],
       "status": {
-        "implemented": false,
-        "notes": []
+        "implemented": true,
+        "notes": [
+          "Protocol v1 messages implemented and validated."
+        ]
       }
     },
     {

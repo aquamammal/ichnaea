@@ -30,6 +30,16 @@
 - Next: F-009 Message protocol v1: typed messages + validation
 - Notes: Manual two-machine handshake confirmed by user.
 
+## 2025-12-30 18:22 — F-009 Message protocol v1: typed messages + validation
+- Summary: Added protocol v1 encoder/decoder and validation for hello/consent/heartbeat; unit tests pass.
+- Files: protocol.js, test/protocol.test.js
+- Commands:
+  - npm test
+- Results: PASS (unit tests)
+- Commit: (pending)
+- Next: F-010 Fake location send/receive (secure, last-known only)
+- Notes: No UI changes yet; protocol module ready for stream usage.
+
 ## 2025-12-27 17:12 — F-005 Local data model: contacts + relationships + last-known location
 - Summary: Added local store module with schema/versioning and CRUD for contacts, relationships, and last-known location.
 - Files: store.js, test/store.test.js
