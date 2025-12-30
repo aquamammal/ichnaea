@@ -25,10 +25,10 @@
 - Files: relationship.js, swarm.js, index.js, store.js, ui/app.js, test/crypto_relationship.test.js
 - Commands:
   - npm test
-- Results: PASS (unit tests)
-- Commit: (pending)
-- Next: F-008 manual secure-channel handshake
-- Notes: Manual two-machine handshake still required.
+- Results: PASS (unit tests), PASS (manual handshake)
+- Commit: acda34c feat(F-008): relationship handshake
+- Next: F-009 Message protocol v1: typed messages + validation
+- Notes: Manual two-machine handshake confirmed by user.
 
 ## 2025-12-27 17:12 — F-005 Local data model: contacts + relationships + last-known location
 - Summary: Added local store module with schema/versioning and CRUD for contacts, relationships, and last-known location.
