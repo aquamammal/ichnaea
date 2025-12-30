@@ -20,6 +20,7 @@ import {
   findRelationshipByContactId,
   deleteContact
 } from './store.js'
+import { validateLatLon } from './latlon.js'
 
 // Load identity locally
 let identity = null
@@ -73,6 +74,8 @@ const swarm = createSwarmManager({
     pipe.write(JSON.stringify({ type: 'location:update', contactId: rel.contactId }))
   }
 })
+
+let manualLocation = null
 swarm.onUpdate((state) => {
   pipe.write(JSON.stringify({ type: 'swarm:update', state }))
 })
@@ -140,6 +143,10 @@ pipe.on('data', async (data) => {
       const contact = await setShareLocation(msg.contactId || '', Boolean(msg.enabled))
       pipe.write(JSON.stringify({ type: 'location:toggle', id: msg.id, contact }))
     }
+    if (msg.type === 'location:set-manual') {
+      manualLocation = validateLatLon(msg.lat, msg.lon)
+      pipe.write(JSON.stringify({ type: 'location:manual', id: msg.id, location: manualLocation }))
+    }
     if (msg.type === 'contact:delete') {
       await deleteContact(msg.contactId || '')
       pipe.write(JSON.stringify({ type: 'contact:deleted', id: msg.id }))
@@ -152,18 +159,17 @@ pipe.on('data', async (data) => {
 // Dummy location sender
 setInterval(async () => {
   try {
+    if (!manualLocation) return
     const contacts = await listContactSummaries()
     for (const c of contacts) {
       if (!c.shareLocation) continue
       if (c.status !== 'approved') continue
       const rel = await findRelationshipByContactId(c.id)
       if (!rel || !rel.peerPublicKey) continue
-      const lat = 37.7749 + (Math.random() - 0.5) * 0.01
-      const lon = -122.4194 + (Math.random() - 0.5) * 0.01
       swarm.sendToPeer(rel.peerPublicKey, {
         type: 'location',
-        lat,
-        lon,
+        lat: manualLocation.lat,
+        lon: manualLocation.lon,
         ts: Date.now()
       })
     }

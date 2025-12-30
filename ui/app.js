@@ -125,6 +125,14 @@ async function main () {
       return
     }
 
+    if (msg?.type === 'location:manual') {
+      const loc = msg.location
+      if (loc) {
+        setText('manual-status', `${loc.lat}, ${loc.lon}`)
+      }
+      return
+    }
+
     if (msg?.id && pending.has(msg.id)) {
       const { resolve, reject } = pending.get(msg.id)
       pending.delete(msg.id)
@@ -176,6 +184,9 @@ async function main () {
   const inputToken = document.getElementById('incoming-token')
   const btnJoin = document.getElementById('btn-join-swarm')
   const btnLeave = document.getElementById('btn-leave-swarm')
+  const inputLat = document.getElementById('manual-lat')
+  const inputLon = document.getElementById('manual-lon')
+  const btnSetLoc = document.getElementById('btn-set-location')
 
   if (btnCreate) {
     btnCreate.addEventListener('click', async () => {
@@ -191,6 +202,13 @@ async function main () {
       await send('consent:accept-token', { token: token.trim() })
       if (inputToken) inputToken.value = ''
       await refreshContacts()
+    })
+  }
+  if (btnSetLoc) {
+    btnSetLoc.addEventListener('click', async () => {
+      const lat = inputLat?.value || ''
+      const lon = inputLon?.value || ''
+      await send('location:set-manual', { lat, lon })
     })
   }
   if (btnClear) {

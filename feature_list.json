@@ -3,7 +3,7 @@
     "project": "ICHNAEA",
     "repo_type": "pear-desktop-gui",
     "created_at": "2025-12-27T00:00:00Z",
-    "updated_at": "2025-12-30T19:47:13Z",
+    "updated_at": "2025-12-30T19:51:24Z",
     "policy": {
       "immutable_features": true,
       "allowed_mutations": [
@@ -598,8 +598,18 @@
           "type": "unit",
           "path_or_command": "tests/latlon.test.js",
           "initial_state": "failing",
-          "passing": false,
-          "evidence": []
+          "passing": true,
+          "evidence": [
+            {
+              "timestamp": "2025-12-30T19:51:24Z",
+              "commands_run": [
+                "npm test"
+              ],
+              "result": "pass",
+              "summary": "Lat/lon validation tests pass.",
+              "artifacts": []
+            }
+          ]
         },
         {
           "name": "manual_real_coords_send",
@@ -613,7 +623,8 @@
       "status": {
         "implemented": false,
         "notes": [
-          "Real OS geolocation may be added later as an optional source, but manual input is the minimum reliable baseline."
+          "Real OS geolocation may be added later as an optional source, but manual input is the minimum reliable baseline.",
+          "Unit tests pass; manual two-machine coords test still required."
         ]
       }
     },

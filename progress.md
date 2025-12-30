@@ -70,6 +70,16 @@
 - Next: F-011 Real location source v1 (manual input)
 - Notes: User confirmed last-known location updates on receiver.
 
+## 2025-12-30 19:51 — F-011 Real location source v1 (manual input)
+- Summary: Added manual lat/lon input UI and validation; sender now uses manual coords.
+- Files: latlon.js, index.js, ui/index.html, ui/app.js, tests/latlon.test.js
+- Commands:
+  - npm test
+- Results: PASS (unit tests)
+- Commit: (pending)
+- Next: F-011 manual two-machine coords test
+- Notes: Manual integration still required to confirm receiver updates with entered coords.
+
 ## 2025-12-27 17:12 — F-005 Local data model: contacts + relationships + last-known location
 - Summary: Added local store module with schema/versioning and CRUD for contacts, relationships, and last-known location.
 - Files: store.js, test/store.test.js
