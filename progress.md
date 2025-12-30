@@ -15,10 +15,10 @@
 - Files: swarm.js, index.js, ui/index.html, ui/app.js, package.json, package-lock.json
 - Commands:
   - npm test
-- Results: PASS (unit tests)
+- Results: PASS (unit tests), PASS (manual two-peer connect)
 - Commit: (pending)
-- Next: F-007 manual two-peer connect test
-- Notes: Manual two-peer verification still required.
+- Next: F-008 Per-relationship encrypted stream establishment
+- Notes: Manual two-peer verification confirmed by user; UI may require multiple clicks to refresh status.
 
 ## 2025-12-27 17:12 — F-005 Local data model: contacts + relationships + last-known location
 - Summary: Added local store module with schema/versioning and CRUD for contacts, relationships, and last-known location.
