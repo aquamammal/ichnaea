@@ -57,11 +57,16 @@ export function createSwarmManager () {
     state.topic = topic.toString('hex')
     state.lastConnectedAt = 0
     discovery = swarm.join(topic, { server: true, client: true })
-    await discovery.flushed()
     state.connecting = swarm.connecting || 0
     state.connections = swarm.connections ? swarm.connections.size : 0
     state.peers = swarm.peers ? swarm.peers.size : 0
     emit()
+    discovery.flushed().then(() => {
+      state.connecting = swarm.connecting || 0
+      state.connections = swarm.connections ? swarm.connections.size : 0
+      state.peers = swarm.peers ? swarm.peers.size : 0
+      emit()
+    }, () => {})
     return { ...state }
   }
 
