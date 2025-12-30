@@ -1,5 +1,5 @@
 import crypto from 'hypercore-crypto'
-import { createContact, setContactStatus, loadStore } from './store.js'
+import { createContact, setContactStatus, loadStore, listContactSummaries } from './store.js'
 
 export function generateToken () {
   return crypto.randomBytes(16).toString('hex')
@@ -36,6 +36,5 @@ export async function denyContact (id, opts = {}) {
 }
 
 export async function listContacts (opts = {}) {
-  const store = await loadStore(opts)
-  return Object.values(store.contacts)
+  return listContactSummaries(opts)
 }

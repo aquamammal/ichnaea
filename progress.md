@@ -40,6 +40,16 @@
 - Next: F-010 Fake location send/receive (secure, last-known only)
 - Notes: No UI changes yet; protocol module ready for stream usage.
 
+## 2025-12-30 18:56 — F-010 Fake location send/receive (secure, last-known only)
+- Summary: Added share-location toggle, dummy location sender, and last-known display; unit test for overwrite passes.
+- Files: index.js, swarm.js, store.js, consent.js, ui/app.js, tests/location_store.test.js, package.json
+- Commands:
+  - npm test
+- Results: PASS (unit tests)
+- Commit: (pending)
+- Next: F-010 manual two-machine fake location test
+- Notes: Manual integration still required to confirm live receive.
+
 ## 2025-12-27 17:12 — F-005 Local data model: contacts + relationships + last-known location
 - Summary: Added local store module with schema/versioning and CRUD for contacts, relationships, and last-known location.
 - Files: store.js, test/store.test.js

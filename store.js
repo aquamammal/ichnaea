@@ -93,7 +93,8 @@ export async function createContact (contact = {}, opts = {}) {
     created,
     name: contact.name || '',
     direction: contact.direction || '',
-    token: contact.token || ''
+    token: contact.token || '',
+    shareLocation: Boolean(contact.shareLocation)
   }
   await save(store, { ...opts, storage })
   return store.contacts[id]
@@ -149,6 +150,36 @@ export async function findContactByToken (token, opts = {}) {
   const t = String(token || '').trim()
   if (!t) return null
   return Object.values(store.contacts).find(c => c.token === t) || null
+}
+
+export async function setShareLocation (contactId, enabled, opts = {}) {
+  const { storage, store } = await load(opts)
+  if (!store.contacts[contactId]) throw new Error('Contact not found')
+  store.contacts[contactId].shareLocation = Boolean(enabled)
+  await save(store, { ...opts, storage })
+  return store.contacts[contactId]
+}
+
+export async function findRelationshipByContactId (contactId, opts = {}) {
+  const { store } = await load(opts)
+  return Object.values(store.relationships).find(r => r.contactId === contactId) || null
+}
+
+export async function findRelationshipByPeerKey (peerPublicKey, opts = {}) {
+  const { store } = await load(opts)
+  const pk = String(peerPublicKey || '').trim()
+  if (!pk) return null
+  return Object.values(store.relationships).find(r => r.peerPublicKey === pk) || null
+}
+
+export async function listContactSummaries (opts = {}) {
+  const { store } = await load(opts)
+  return Object.values(store.contacts).map((c) => {
+    return {
+      ...c,
+      location: store.locations[c.id] || null
+    }
+  })
 }
 
 export async function setLastKnownLocation (contactId, location = {}, opts = {}) {

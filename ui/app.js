@@ -120,6 +120,11 @@ async function main () {
       return
     }
 
+    if (msg?.type === 'location:update') {
+      refreshContacts()
+      return
+    }
+
     if (msg?.id && pending.has(msg.id)) {
       const { resolve, reject } = pending.get(msg.id)
       pending.delete(msg.id)
@@ -132,7 +137,7 @@ async function main () {
   setStatus(details.join('\n'), ok)
 
   async function refreshContacts () {
-    const res = await send('consent:list')
+    const res = await send('contact:list')
     const contacts = res.contacts || []
     if (!contacts.length) {
       setText('contacts', 'No contacts yet.')
@@ -142,14 +147,23 @@ async function main () {
       const token = c.token ? c.token.slice(0, 12) + '…' : '—'
       const status = c.status || '—'
       const direction = c.direction || '—'
+      const share = c.shareLocation ? 'sharing' : 'not-sharing'
+      const loc = c.location
+        ? `${c.location.lat.toFixed(4)}, ${c.location.lon.toFixed(4)} @ ${new Date(c.location.updatedAt).toISOString()}`
+        : '—'
       const approve = status === 'pending' ? `<button data-act="approve" data-id="${c.id}">Approve</button>` : ''
       const deny = status === 'pending' ? `<button data-act="deny" data-id="${c.id}">Deny</button>` : ''
+      const toggle = status === 'approved'
+        ? `<button data-act="share" data-id="${c.id}" data-share="${c.shareLocation ? '1' : '0'}">${c.shareLocation ? 'Stop' : 'Share'}</button>`
+        : ''
       return `<div class="kv">` +
         `<code>${esc(c.id)}</code> ` +
         `<span>${esc(direction)}</span> ` +
         `<span>${esc(status)}</span> ` +
         `<span>${esc(token)}</span> ` +
-        `${approve} ${deny}` +
+        `<span>${esc(share)}</span> ` +
+        `<span>${esc(loc)}</span> ` +
+        `${approve} ${deny} ${toggle}` +
       `</div>`
     })
     setHtml('contacts', rows.join(''))
@@ -201,6 +215,10 @@ async function main () {
     if (!act || !id) return
     if (act === 'approve') await send('consent:approve', { contactId: id })
     if (act === 'deny') await send('consent:deny', { contactId: id })
+    if (act === 'share') {
+      const current = target.dataset.share === '1'
+      await send('location:toggle', { contactId: id, enabled: !current })
+    }
     await refreshContacts()
   })
 

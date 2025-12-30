@@ -10,10 +10,12 @@ export function topicFromToken (token) {
 export function createSwarmManager (opts = {}) {
   const identityPublicKey = opts.identityPublicKey || ''
   const onSecure = typeof opts.onSecure === 'function' ? opts.onSecure : () => {}
+  const onMessage = typeof opts.onMessage === 'function' ? opts.onMessage : () => {}
   const swarm = new Hyperswarm()
   let discovery = null
   let currentTopic = null
   let currentToken = ''
+  const peerConns = new Map()
   const state = {
     topic: '',
     connecting: 0,
@@ -52,29 +54,44 @@ export function createSwarmManager (opts = {}) {
       token
     })
     conn.write(hello)
-    conn.on('close', () => {
-      state.connecting = swarm.connecting || 0
-      state.connections = swarm.connections ? swarm.connections.size : 0
-      state.peers = swarm.peers ? swarm.peers.size : 0
-      emit()
-    })
-
-    conn.once('data', (data) => {
+    let handshakeDone = false
+    let peerKey = ''
+    conn.on('data', (data) => {
       let msg = null
       try {
         msg = JSON.parse(data.toString())
       } catch {
         return
       }
-      if (msg?.type !== 'ichnaea-handshake') return
-      if (!msg.publicKey || msg.token !== currentToken) return
+      if (msg?.type === 'ichnaea-handshake') {
+        if (handshakeDone) return
+        if (!msg.publicKey || msg.token !== currentToken) return
+        handshakeDone = true
 
-      const relId = deriveRelationshipId(identityPublicKey, msg.publicKey, currentToken)
-      const relKey = deriveRelationshipKey(identityPublicKey, msg.publicKey, currentToken)
-      state.secure = true
-      state.relationshipId = relId
+        peerKey = msg.publicKey
+        peerConns.set(peerKey, conn)
+        const relId = deriveRelationshipId(identityPublicKey, msg.publicKey, currentToken)
+        const relKey = deriveRelationshipKey(identityPublicKey, msg.publicKey, currentToken)
+        state.secure = true
+        state.relationshipId = relId
+        emit()
+        onSecure({ relationshipId: relId, key: relKey, peerPublicKey: msg.publicKey, token: currentToken })
+        return
+      }
+
+      if (handshakeDone) {
+        onMessage({ peerPublicKey: peerKey, message: msg })
+      }
+    })
+
+    conn.on('close', () => {
+      for (const [pk, c] of peerConns.entries()) {
+        if (c === conn) peerConns.delete(pk)
+      }
+      state.connecting = swarm.connecting || 0
+      state.connections = swarm.connections ? swarm.connections.size : 0
+      state.peers = swarm.peers ? swarm.peers.size : 0
       emit()
-      onSecure({ relationshipId: relId, key: relKey, peerPublicKey: msg.publicKey, token: currentToken })
     })
   })
 
@@ -125,5 +142,12 @@ export function createSwarmManager (opts = {}) {
     await swarm.destroy()
   }
 
-  return { join, leave, close, onUpdate, state: () => ({ ...state }) }
+  function sendToPeer (peerPublicKey, message) {
+    const conn = peerConns.get(peerPublicKey)
+    if (!conn) return false
+    conn.write(JSON.stringify(message))
+    return true
+  }
+
+  return { join, leave, close, onUpdate, state: () => ({ ...state }), sendToPeer }
 }

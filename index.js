@@ -10,7 +10,15 @@ import {
   listContacts
 } from './consent.js'
 import { createSwarmManager } from './swarm.js'
-import { findContactByToken, upsertRelationship } from './store.js'
+import {
+  findContactByToken,
+  upsertRelationship,
+  findRelationshipByPeerKey,
+  setLastKnownLocation,
+  listContactSummaries,
+  setShareLocation,
+  findRelationshipByContactId
+} from './store.js'
 
 // Load identity locally
 let identity = null
@@ -51,6 +59,17 @@ const swarm = createSwarmManager({
     } catch (err) {
       console.error('Relationship persist failed:', err)
     }
+  },
+  onMessage: async ({ peerPublicKey, message }) => {
+    if (!message || message.type !== 'location') return
+    const rel = await findRelationshipByPeerKey(peerPublicKey)
+    if (!rel) return
+    await setLastKnownLocation(rel.contactId, {
+      lat: message.lat,
+      lon: message.lon,
+      updatedAt: message.ts || Date.now()
+    })
+    pipe.write(JSON.stringify({ type: 'location:update', contactId: rel.contactId }))
   }
 })
 swarm.onUpdate((state) => {
@@ -103,6 +122,10 @@ pipe.on('data', async (data) => {
       const contacts = await listContacts()
       pipe.write(JSON.stringify({ type: 'consent:list', id: msg.id, contacts }))
     }
+    if (msg.type === 'contact:list') {
+      const contacts = await listContactSummaries()
+      pipe.write(JSON.stringify({ type: 'contact:list', id: msg.id, contacts }))
+    }
     if (msg.type === 'swarm:join') {
       const state = await swarm.join(msg.token || '')
       pipe.write(JSON.stringify({ type: 'swarm:state', id: msg.id, state }))
@@ -112,9 +135,36 @@ pipe.on('data', async (data) => {
       await swarm.leave()
       pipe.write(JSON.stringify({ type: 'swarm:state', id: msg.id, state: swarm.state() }))
     }
+    if (msg.type === 'location:toggle') {
+      const contact = await setShareLocation(msg.contactId || '', Boolean(msg.enabled))
+      pipe.write(JSON.stringify({ type: 'location:toggle', id: msg.id, contact }))
+    }
   } catch (err) {
     pipe.write(JSON.stringify({ type: 'error', id: msg.id, message: String(err?.message || err) }))
   }
 })
+
+// Dummy location sender
+setInterval(async () => {
+  try {
+    const contacts = await listContactSummaries()
+    for (const c of contacts) {
+      if (!c.shareLocation) continue
+      if (c.status !== 'approved') continue
+      const rel = await findRelationshipByContactId(c.id)
+      if (!rel || !rel.peerPublicKey) continue
+      const lat = 37.7749 + (Math.random() - 0.5) * 0.01
+      const lon = -122.4194 + (Math.random() - 0.5) * 0.01
+      swarm.sendToPeer(rel.peerPublicKey, {
+        type: 'location',
+        lat,
+        lon,
+        ts: Date.now()
+      })
+    }
+  } catch (err) {
+    console.error('location sender error:', err)
+  }
+}, 5000)
 
 // Avoid unsolicited pipe messages; UI expects JSON responses.

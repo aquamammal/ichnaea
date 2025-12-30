@@ -15,7 +15,7 @@
   "license": "Apache-2.0",
   "scripts": {
     "dev": "pear run -d .",
-    "test": "brittle test/*.test.js"
+    "test": "brittle test/*.test.js tests/*.test.js"
   },
   "devDependencies": {
     "brittle": "^3.0.0",
