@@ -10,6 +10,7 @@ import {
   listContacts
 } from './consent.js'
 import { createSwarmManager } from './swarm.js'
+import { findContactByToken, upsertRelationship } from './store.js'
 
 // Load identity locally
 let identity = null
@@ -34,7 +35,24 @@ const pipe = await runtime.start({ bridge })
 
 pipe.on('close', () => Pear.exit())
 
-const swarm = createSwarmManager()
+const swarm = createSwarmManager({
+  identityPublicKey: publicIdentity.publicKey,
+  onSecure: async ({ relationshipId, key, peerPublicKey, token }) => {
+    try {
+      const contact = await findContactByToken(token)
+      if (!contact || contact.status !== 'approved') return
+      await upsertRelationship({
+        id: relationshipId,
+        contactId: contact.id,
+        token,
+        peerPublicKey,
+        key
+      })
+    } catch (err) {
+      console.error('Relationship persist failed:', err)
+    }
+  }
+})
 swarm.onUpdate((state) => {
   pipe.write(JSON.stringify({ type: 'swarm:update', state }))
 })

@@ -83,12 +83,14 @@ async function main () {
     const last = state.lastConnectedAt
       ? `last=${new Date(state.lastConnectedAt).toISOString()}`
       : 'last=—'
+    const secure = state.secure ? `secure=YES (${state.relationshipId.slice(0, 12)}…)` : 'secure=NO'
     const parts = [
       `topic=${state.topic.slice(0, 16)}…`,
       `connecting=${state.connecting || 0}`,
       `connections=${state.connections || 0}`,
       `peers=${state.peers || 0}`,
-      last
+      last,
+      secure
     ]
     setText('swarm-status', parts.join(' | '))
   }

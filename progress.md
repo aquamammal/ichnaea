@@ -20,6 +20,16 @@
 - Next: F-008 Per-relationship encrypted stream establishment
 - Notes: Manual two-peer verification confirmed by user; UI may require multiple clicks to refresh status.
 
+## 2025-12-30 17:38 — F-008 Per-relationship encrypted stream establishment
+- Summary: Added relationship key derivation + handshake markers; unit tests for deterministic derivation pass.
+- Files: relationship.js, swarm.js, index.js, store.js, ui/app.js, test/crypto_relationship.test.js
+- Commands:
+  - npm test
+- Results: PASS (unit tests)
+- Commit: (pending)
+- Next: F-008 manual secure-channel handshake
+- Notes: Manual two-machine handshake still required.
+
 ## 2025-12-27 17:12 — F-005 Local data model: contacts + relationships + last-known location
 - Summary: Added local store module with schema/versioning and CRUD for contacts, relationships, and last-known location.
 - Files: store.js, test/store.test.js

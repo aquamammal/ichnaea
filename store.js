@@ -116,10 +116,39 @@ export async function createRelationship (rel = {}, opts = {}) {
   store.relationships[id] = {
     id,
     contactId,
-    created: rel.created || Date.now()
+    created: rel.created || Date.now(),
+    token: rel.token || '',
+    peerPublicKey: rel.peerPublicKey || '',
+    key: rel.key || ''
   }
   await save(store, { ...opts, storage })
   return store.relationships[id]
+}
+
+export async function upsertRelationship (rel = {}, opts = {}) {
+  const { storage, store } = await load(opts)
+  const contactId = rel.contactId
+  if (!contactId) throw new Error('contactId required')
+  if (!store.contacts[contactId]) throw new Error('Contact not found')
+  const existing = Object.values(store.relationships).find(r => r.contactId === contactId)
+  const id = rel.id || existing?.id || makeId()
+  store.relationships[id] = {
+    id,
+    contactId,
+    created: existing?.created || rel.created || Date.now(),
+    token: rel.token || existing?.token || '',
+    peerPublicKey: rel.peerPublicKey || existing?.peerPublicKey || '',
+    key: rel.key || existing?.key || ''
+  }
+  await save(store, { ...opts, storage })
+  return store.relationships[id]
+}
+
+export async function findContactByToken (token, opts = {}) {
+  const { store } = await load(opts)
+  const t = String(token || '').trim()
+  if (!t) return null
+  return Object.values(store.contacts).find(c => c.token === t) || null
 }
 
 export async function setLastKnownLocation (contactId, location = {}, opts = {}) {

@@ -3,7 +3,7 @@
     "project": "ICHNAEA",
     "repo_type": "pear-desktop-gui",
     "created_at": "2025-12-27T00:00:00Z",
-    "updated_at": "2025-12-30T17:19:15Z",
+    "updated_at": "2025-12-30T17:38:13Z",
     "policy": {
       "immutable_features": true,
       "allowed_mutations": [
@@ -422,8 +422,18 @@
           "type": "unit",
           "path_or_command": "tests/crypto_relationship.test.js",
           "initial_state": "failing",
-          "passing": false,
-          "evidence": []
+          "passing": true,
+          "evidence": [
+            {
+              "timestamp": "2025-12-30T17:38:13Z",
+              "commands_run": [
+                "npm test"
+              ],
+              "result": "pass",
+              "summary": "Relationship id/key derivation deterministic across order; token changes id.",
+              "artifacts": []
+            }
+          ]
         },
         {
           "name": "manual_secure_channel_handshake",
@@ -436,7 +446,9 @@
       ],
       "status": {
         "implemented": false,
-        "notes": []
+        "notes": [
+          "Unit tests pass; manual secure-channel handshake still required."
+        ]
       }
     },
     {
