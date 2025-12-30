@@ -47,7 +47,7 @@ async function main () {
 
   const ok = domOk && pearOk
 
-  // Identity + consent (via parent pipe)
+  // Identity + consent + networking (via parent pipe)
   const pipe = getPipe()
   if (!pipe) {
     details.push(line('Identity ready', false, 'No parent pipe available'))
@@ -60,6 +60,7 @@ async function main () {
   details.push(line('Identity channel', true, 'pear-pipe'))
   const decoder = new TextDecoder()
   const pending = new Map()
+  let identityReceived = false
 
   function send (type, payload = {}) {
     const id = Math.random().toString(36).slice(2)
@@ -72,6 +73,20 @@ async function main () {
         reject(new Error('Request timed out'))
       }, 5000)
     })
+  }
+
+  function updateSwarmStatus (state) {
+    if (!state || !state.topic) {
+      setText('swarm-status', 'Disconnected.')
+      return
+    }
+    const parts = [
+      `topic=${state.topic.slice(0, 16)}…`,
+      `connecting=${state.connecting || 0}`,
+      `connections=${state.connections || 0}`,
+      `peers=${state.peers || 0}`
+    ]
+    setText('swarm-status', parts.join(' | '))
   }
 
   pipe.on('data', (data) => {
@@ -94,6 +109,11 @@ async function main () {
       return
     }
 
+    if (msg?.type === 'swarm:update') {
+      updateSwarmStatus(msg.state)
+      return
+    }
+
     if (msg?.id && pending.has(msg.id)) {
       const { resolve, reject } = pending.get(msg.id)
       pending.delete(msg.id)
@@ -102,7 +122,6 @@ async function main () {
     }
   })
 
-  let identityReceived = false
   pipe.write(JSON.stringify({ type: 'request-identity' }))
   setStatus(details.join('\n'), ok)
 
@@ -133,6 +152,8 @@ async function main () {
   const btnCreate = document.getElementById('btn-create-token')
   const btnAccept = document.getElementById('btn-accept-token')
   const inputToken = document.getElementById('incoming-token')
+  const btnJoin = document.getElementById('btn-join-swarm')
+  const btnLeave = document.getElementById('btn-leave-swarm')
 
   if (btnCreate) {
     btnCreate.addEventListener('click', async () => {
@@ -151,6 +172,21 @@ async function main () {
     })
   }
 
+  if (btnJoin) {
+    btnJoin.addEventListener('click', async () => {
+      const token = inputToken?.value || ''
+      if (!token.trim()) return
+      const res = await send('swarm:join', { token: token.trim() })
+      updateSwarmStatus(res.state)
+    })
+  }
+  if (btnLeave) {
+    btnLeave.addEventListener('click', async () => {
+      const res = await send('swarm:leave')
+      updateSwarmStatus(res.state)
+    })
+  }
+
   document.addEventListener('click', async (e) => {
     const target = e.target
     if (!(target instanceof HTMLElement)) return
@@ -166,7 +202,7 @@ async function main () {
 
   // Retry identity request once if it hasn't arrived yet.
   setTimeout(() => {
-    if (!identityReceived) pipe.write('request-identity')
+    if (!identityReceived) pipe.write(JSON.stringify({ type: 'request-identity' }))
   }, 1500)
 }
 

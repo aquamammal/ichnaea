@@ -9,6 +9,7 @@ import {
   denyContact,
   listContacts
 } from './consent.js'
+import { createSwarmManager } from './swarm.js'
 
 // Load identity locally
 let identity = null
@@ -32,6 +33,11 @@ const runtime = new Runtime()
 const pipe = await runtime.start({ bridge })
 
 pipe.on('close', () => Pear.exit())
+
+const swarm = createSwarmManager()
+swarm.onUpdate((state) => {
+  pipe.write(JSON.stringify({ type: 'swarm:update', state }))
+})
 
 pipe.on('data', async (data) => {
   const raw = Buffer.from(data).toString()
@@ -78,6 +84,15 @@ pipe.on('data', async (data) => {
     if (msg.type === 'consent:list') {
       const contacts = await listContacts()
       pipe.write(JSON.stringify({ type: 'consent:list', id: msg.id, contacts }))
+    }
+    if (msg.type === 'swarm:join') {
+      const state = await swarm.join(msg.token || '')
+      pipe.write(JSON.stringify({ type: 'swarm:state', id: msg.id, state }))
+      return
+    }
+    if (msg.type === 'swarm:leave') {
+      await swarm.leave()
+      pipe.write(JSON.stringify({ type: 'swarm:state', id: msg.id, state: swarm.state() }))
     }
   } catch (err) {
     pipe.write(JSON.stringify({ type: 'error', id: msg.id, message: String(err?.message || err) }))

@@ -10,6 +10,16 @@
 - Next: F-007 Networking bootstrap: Hyperswarm discovery for a pairing topic
 - Notes: Manual GUI smoke confirmed by user; identity display also confirmed.
 
+## 2025-12-30 04:04 — F-007 Networking bootstrap: Hyperswarm discovery for a pairing topic
+- Summary: Added Hyperswarm manager and UI controls to join/leave a topic; UI shows connection status.
+- Files: swarm.js, index.js, ui/index.html, ui/app.js, package.json, package-lock.json
+- Commands:
+  - npm test
+- Results: PASS (unit tests)
+- Commit: (pending)
+- Next: F-007 manual two-peer connect test
+- Notes: Manual two-peer verification still required.
+
 ## 2025-12-27 17:12 — F-005 Local data model: contacts + relationships + last-known location
 - Summary: Added local store module with schema/versioning and CRUD for contacts, relationships, and last-known location.
 - Files: store.js, test/store.test.js

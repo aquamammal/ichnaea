@@ -23,6 +23,7 @@
   },
   "dependencies": {
     "hypercore-crypto": "^3.6.1",
+    "hyperswarm": "^4.16.0",
     "pear-bridge": "^1.2.0",
     "pear-electron": "^1.7.10"
   }

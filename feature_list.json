@@ -3,7 +3,7 @@
     "project": "ICHNAEA",
     "repo_type": "pear-desktop-gui",
     "created_at": "2025-12-27T00:00:00Z",
-    "updated_at": "2025-12-30T03:51:08Z",
+    "updated_at": "2025-12-30T04:04:09Z",
     "policy": {
       "immutable_features": true,
       "allowed_mutations": [
@@ -379,7 +379,8 @@
       "status": {
         "implemented": false,
         "notes": [
-          "If automated UI/e2e is infeasible, require a manual integration checklist with logs/screenshots stored under artifacts/."
+          "If automated UI/e2e is infeasible, require a manual integration checklist with logs/screenshots stored under artifacts/.",
+          "Local wiring + UI status added; manual two-peer verification still required."
         ]
       }
     },
