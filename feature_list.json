@@ -3,7 +3,7 @@
     "project": "ICHNAEA",
     "repo_type": "pear-desktop-gui",
     "created_at": "2025-12-27T00:00:00Z",
-    "updated_at": "2025-12-30T19:28:32Z",
+    "updated_at": "2025-12-30T19:47:13Z",
     "policy": {
       "immutable_features": true,
       "allowed_mutations": [
@@ -550,14 +550,24 @@
           "type": "integration",
           "path_or_command": "manual: two-machine fake location",
           "initial_state": "failing",
-          "passing": false,
-          "evidence": []
+          "passing": true,
+          "evidence": [
+            {
+              "timestamp": "2025-12-30T19:47:13Z",
+              "commands_run": [
+                "manual: two-machine fake location"
+              ],
+              "result": "pass",
+              "summary": "User confirmed last-known location updates received.",
+              "artifacts": []
+            }
+          ]
         }
       ],
       "status": {
-        "implemented": false,
+        "implemented": true,
         "notes": [
-          "Unit tests pass; manual two-machine fake location still required."
+          "Unit tests pass; manual two-machine fake location confirmed by user."
         ]
       }
     },

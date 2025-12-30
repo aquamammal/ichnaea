@@ -60,6 +60,16 @@
 - Next: F-010 manual two-machine fake location test
 - Notes: Clear contacts + per-contact remove added for easier manual verification.
 
+## 2025-12-30 19:47 — F-010 Fake location send/receive (secure, last-known only)
+- Summary: Manual two-machine fake location stream confirmed.
+- Files: none
+- Commands:
+  - manual: two-machine fake location
+- Results: PASS (manual integration)
+- Commit: (pending)
+- Next: F-011 Real location source v1 (manual input)
+- Notes: User confirmed last-known location updates on receiver.
+
 ## 2025-12-27 17:12 — F-005 Local data model: contacts + relationships + last-known location
 - Summary: Added local store module with schema/versioning and CRUD for contacts, relationships, and last-known location.
 - Files: store.js, test/store.test.js
