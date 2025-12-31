@@ -25,6 +25,8 @@
     "hypercore-crypto": "^3.6.1",
     "hyperswarm": "^4.16.0",
     "pear-bridge": "^1.2.0",
-    "pear-electron": "^1.7.10"
+    "pear-electron": "^1.7.10",
+    "three": "^0.182.0",
+    "three-globe": "^2.45.0"
   }
 }

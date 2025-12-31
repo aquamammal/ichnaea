@@ -80,6 +80,26 @@
 - Next: F-011 manual two-machine coords test
 - Notes: Manual integration still required to confirm receiver updates with entered coords.
 
+## 2025-12-30 20:01 — F-011 Real location source v1 (manual input)
+- Summary: Manual two-machine coords test confirmed.
+- Files: none
+- Commands:
+  - manual: two-machine manual coords
+- Results: PASS (manual integration)
+- Commit: (pending)
+- Next: F-012 Map view v1 (OpenStreetMap)
+- Notes: User confirmed receiver shows entered coords.
+
+## 2025-12-30 20:08 — F-012 Map view v1 (OpenStreetMap)
+- Summary: Added Leaflet map and marker updates for contacts with last-known location.
+- Files: ui/index.html, ui/app.js, package.json, package-lock.json
+- Commands:
+  - npm test
+- Results: PASS (unit tests)
+- Commit: (pending)
+- Next: F-012 manual map render + marker update test
+- Notes: Manual UI verification required (map render and marker updates).
+
 ## 2025-12-27 17:12 — F-005 Local data model: contacts + relationships + last-known location
 - Summary: Added local store module with schema/versioning and CRUD for contacts, relationships, and last-known location.
 - Files: store.js, test/store.test.js
@@ -149,3 +169,12 @@
 - Commit: 288571c feat(phase3-identity): persist identity + UI
 - Next: F-001 Boot baseline: Pear GUI opens reliably
 - Notes: Pear GUI runtime cannot import Node 'fs'; use bare-fs/bare-path.
+
+## 2025-12-30 20:45 — F-012 Map view v1 (OpenStreetMap)
+- Summary: Replaced map view with 3D globe (three-globe), offline textures, pins + pulsing rings, and click tooltip.
+- Files: ui/index.html, ui/app.js, ui/assets/earth-blue-marble.jpg, ui/assets/earth-topology.png, package.json, package-lock.json
+- Commands: none
+- Results: PENDING (manual globe render + marker update)
+- Commit: (pending)
+- Next: F-012 manual globe render + marker update test
+- Notes: Leaflet-based map was replaced; globe now the active map view.

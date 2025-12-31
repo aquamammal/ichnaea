@@ -59,6 +59,41 @@
 
       .kv { margin-top: 6px; }
       .kv span { opacity: 0.8; }
+
+      #globe {
+        height: 480px;
+        width: 100%;
+        border-radius: 10px;
+        overflow: hidden;
+        border: 1px solid rgba(255,255,255,0.06);
+      }
+
+      #globe-wrap {
+        position: relative;
+        margin-top: 14px;
+      }
+
+      #globe-tooltip {
+        position: absolute;
+        top: 12px;
+        left: 12px;
+        padding: 6px 10px;
+        border-radius: 8px;
+        background: rgba(10, 14, 20, 0.85);
+        border: 1px solid rgba(255,255,255,0.15);
+        color: #e7edf5;
+        font-size: 12px;
+        opacity: 0;
+        transform: translateY(-4px);
+        transition: opacity 0.12s ease, transform 0.12s ease;
+        pointer-events: none;
+        white-space: nowrap;
+      }
+
+      #globe-tooltip.visible {
+        opacity: 1;
+        transform: translateY(0);
+      }
     </style>
 
     <script type="module" src="./app.js"></script>
@@ -74,6 +109,13 @@
       <h1>ICHNAEA</h1>
 
       <div id="status">Booting…</div>
+
+      <div class="section-title">Globe</div>
+      <div id="globe-wrap">
+        <div id="globe"></div>
+        <div id="globe-tooltip"></div>
+      </div>
+      <div class="kv" id="globe-status">Globe loading…</div>
 
       <div class="section-title">Identity</div>
       <div class="kv"><span>Public key:</span> <code id="pubkey">—</code></div>
