@@ -53,7 +53,11 @@ export function createSwarmManager (opts = {}) {
       publicKey: identityPublicKey,
       token
     })
-    conn.write(hello)
+    try {
+      conn.write(hello)
+    } catch {
+      return
+    }
     let handshakeDone = false
     let peerKey = ''
     conn.on('data', (data) => {
@@ -82,6 +86,16 @@ export function createSwarmManager (opts = {}) {
       if (handshakeDone) {
         onMessage({ peerPublicKey: peerKey, message: msg })
       }
+    })
+
+    conn.on('error', () => {
+      for (const [pk, c] of peerConns.entries()) {
+        if (c === conn) peerConns.delete(pk)
+      }
+      state.connecting = swarm.connecting || 0
+      state.connections = swarm.connections ? swarm.connections.size : 0
+      state.peers = swarm.peers ? swarm.peers.size : 0
+      emit()
     })
 
     conn.on('close', () => {
@@ -145,7 +159,11 @@ export function createSwarmManager (opts = {}) {
   function sendToPeer (peerPublicKey, message) {
     const conn = peerConns.get(peerPublicKey)
     if (!conn) return false
-    conn.write(JSON.stringify(message))
+    try {
+      conn.write(JSON.stringify(message))
+    } catch {
+      return false
+    }
     return true
   }
 
