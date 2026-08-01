@@ -667,7 +667,8 @@
       "status": {
         "implemented": false,
         "notes": [
-          "If automated UI testing is not feasible, store screenshots under artifacts/ with timestamped filenames."
+          "If automated UI testing is not feasible, store screenshots under artifacts/ with timestamped filenames.",
+          "2026-08-01: Manual GUI verification BLOCKED on Pear platform 2.6.5/bare 1.24.3 - Electron UI (pear-runtime) never spawns a window, fails silently. pear-electron upgraded 1.7.10->1.9.0-rc.0 to clear deprecated run-arg module error. Unit tests pass 15/15. Needs manual check in a working Pear desktop env."
         ]
       }
     },

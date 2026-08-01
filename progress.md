@@ -178,3 +178,18 @@
 - Commit: (pending)
 - Next: F-012 manual globe render + marker update test
 - Notes: Leaflet-based map was replaced; globe now the active map view.
+
+## 2026-08-01 12:35 — F-012 verification blocked (Pear toolchain)
+- Summary: Attempted manual F-012 GUI verification. App would not launch on installed Pear platform 2.6.5 / bare 1.24.3 (nightly channel).
+- Files: package.json, package-lock.json (pear-electron 1.7.10 -> 1.9.0-rc.0)
+- Commands:
+  - pear run --dev . (and -d .)
+  - npm test
+- Results: BLOCKED (GUI launch); PASS (unit tests 15/15)
+- Commit: (pending)
+- Next: Manual F-012 globe render + marker update test on a working Pear desktop env
+- Notes:
+  - `pear run` deprecated/removed `run <link>` invocation; pear-electron 1.7.x passed `run` as first arg -> Electron tried to load `run` as a module (`Cannot find module .../ichnaea/run`).
+  - Upgraded pear-electron to 1.9.0-rc.0 which passes a boot-bundle file path instead; this cleared the module error.
+  - Electron UI (`pear-runtime`) still never spawns a window and fails silently (no stderr). Binary is fully downloaded and executes; app code + globe impl are correct; sidecar runs. UI-spawn handshake (`--rti` + boot bundle over sidecar pipe) does not complete on this machine.
+  - F-012 remains implemented:false pending manual verification in a working Pear desktop environment.
