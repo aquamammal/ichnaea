@@ -1,4 +1,4 @@
-# ICHNAEA — Codex Contract
+# ICHNAEA — Agent Contract
 
 ## Project Overview
 
@@ -26,16 +26,24 @@ A stable Pear desktop app where peers can mutually consent, establish encrypted 
 ```
 .
 ├─ index.js
+├─ handlers.js
 ├─ identity.js
+├─ consent.js
+├─ store.js
+├─ swarm.js
+├─ relationship.js
+├─ protocol.js
+├─ latlon.js
 ├─ ui/
 │  ├─ index.html
 │  └─ app.js
 ├─ test/
 ├─ feature_list.json
 ├─ progress.md
+├─ decisions.md
 ├─ project/
 │  └─ init.sh
-└─ codex.md
+└─ AGENTS.md
 ```
 
 **Entrypoints**
@@ -89,4 +97,4 @@ A feature is done only when:
 
 ## Governance
 
-`codex.md` may only be updated to add missing factual run/test info, document verified sharp edges, or correct incorrect instructions.
+`AGENTS.md` may only be updated to add missing factual run/test info, document verified sharp edges, or correct incorrect instructions.
